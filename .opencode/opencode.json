@@ -1,0 +1,51 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "oh-my-opencode",
+    "@plannotator/opencode@latest",
+    "opencode-mem",
+    "opencode-model-announcer"
+  ],
+  "modelProvider": {
+    "default": "anthropic",
+    "providers": {
+      "anthropic": {
+        "apiKey": "${ANTHROPIC_API_KEY}"
+      },
+      "openai": {
+        "apiKey": "${OPENAI_API_KEY}"
+      },
+      "google": {
+        "apiKey": "${GOOGLE_API_KEY}"
+      }
+    }
+  },
+  "plugins": {
+    "oh-my-opencode": {
+      "enabled": true,
+      "features": {
+        "multiModelOrchestration": true,
+        "backgroundAgents": true,
+        "lspTools": true,
+        "astRefactoring": true
+      }
+    },
+    "plannotator": {
+      "enabled": true,
+      "autoSaveToObsidian": false,
+      "reviewDiffsVisually": true
+    },
+    "opencode-mem": {
+      "enabled": true,
+      "webServerEnabled": true,
+      "webServerPort": 4747,
+      "storagePath": "~/.opencode-mem/data",
+      "embeddingModel": "Xenova/nomic-embed-text-v1",
+      "maxMemories": 100
+    },
+    "opencode-model-announcer": {
+      "enabled": true,
+      "announceAtStartup": true
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  // OpenCode Memory Plugin Configuration
+  // Storage and Database
+  "storagePath": "~/.opencode-mem/data",
+  "databaseType": "sqlite",
+  
+  // Embedding Settings
+  "embeddingModel": "Xenova/nomic-embed-text-v1",
+  "embeddingProvider": "local",
+  
+  // Memory Management
+  "maxMemories": 100,
+  "autoSaveInterval": 300,
+  "enableAutoMemory": true,
+  
+  // Web UI Settings
+  "webServerEnabled": true,
+  "webServerPort": 4747,
+  "webServerHost": "127.0.0.1",
+  
+  // Memory Provider (for generating memories)
+  "memoryProvider": "openai-chat",
+  "memoryApiKey": "${OPENAI_API_KEY}",
+  
+  // Search Settings
+  "searchResultsLimit": 10,
+  "similarityThreshold": 0.7,
+  
+  // User Profile
+  "enableUserProfile": true,
+  "profileUpdateFrequency": "daily"
+}

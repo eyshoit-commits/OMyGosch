@@ -1,0 +1,35 @@
+{
+  "name": "opencode-workspace",
+  "version": "1.0.0",
+  "description": "OpenCode workspace with oh-my-opencode, plannotator, opencode-mem, and opencode-model-announcer plugins",
+  "private": true,
+  "scripts": {
+    "setup": "./setup-environment.sh",
+    "quick-start": "./quick-start.sh",
+    "install-opencode": "npm install -g opencode",
+    "install-oh-my-opencode": "bunx oh-my-opencode install || npx oh-my-opencode install",
+    "start": "opencode",
+    "memory-ui": "open http://127.0.0.1:4747",
+    "check-plugins": "opencode --list-plugins || echo 'OpenCode not installed'"
+  },
+  "keywords": [
+    "opencode",
+    "ai",
+    "coding-agent",
+    "oh-my-opencode",
+    "plannotator",
+    "opencode-mem",
+    "opencode-model-announcer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eyshoit-commits/workspace"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

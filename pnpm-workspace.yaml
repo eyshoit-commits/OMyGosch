@@ -1,0 +1,5 @@
+packages:
+  - "/opt/app/shared"
+  - "/opt/app/backend"
+  - "/opt/app/frontend"
+  - "/home/bkg/workspace/**"

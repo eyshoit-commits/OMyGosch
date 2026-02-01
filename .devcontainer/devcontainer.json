@@ -1,0 +1,34 @@
+{
+  "name": "OpenCode Manager Devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "bkg",
+  "forwardPorts": [
+    5003,
+    5100,
+    5101,
+    5102,
+    5103
+  ],
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-toolsai.jupyter",
+    "rust-lang.rust-analyzer",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint"
+  ],
+  "postCreateCommand": "sudo chown -R bkg:bkg /workspace && cd /home/bkg/workspace && . ~/.nvm/nvm.sh && pnpm install --frozen-lockfile && conda --version && nvm --version && rustc --version"
+}

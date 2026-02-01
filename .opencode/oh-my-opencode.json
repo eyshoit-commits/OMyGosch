@@ -1,0 +1,43 @@
+{
+  "agents": {
+    "sisyphus": {
+      "model": "google/antigravity-claude-opus-4-5-thinking",
+      "variant": "max"
+    },
+    "atlas": {
+      "model": "google/antigravity-claude-sonnet-4-5"
+    },
+    "prometheus": {
+      "model": "google/antigravity-claude-opus-4-5-thinking",
+      "variant": "max"
+    },
+    "metis": {
+      "model": "google/antigravity-claude-opus-4-5-thinking",
+      "variant": "max"
+    },
+    "hephaestus": {
+      "model": "google/antigravity-gemini-3-pro",
+      "variant": "high"
+    },
+    "oracle": {
+      "model": "google/antigravity-gemini-3-pro",
+      "variant": "high"
+    },
+    "momus": {
+      "model": "google/antigravity-gemini-3-pro",
+      "variant": "high"
+    },
+    "librarian": {
+      "model": "google/antigravity-gemini-3-flash",
+      "variant": "high"
+    },
+    "explore": {
+      "model": "google/antigravity-gemini-3-flash",
+      "variant": "high"
+    },
+    "multimodal-looker": {
+      "model": "google/antigravity-gemini-3-flash",
+      "variant": "high"
+    }
+  }
+}
