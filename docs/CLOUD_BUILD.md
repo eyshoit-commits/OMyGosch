@@ -18,6 +18,7 @@ Automatisierte Docker Image Builds für OpenCode OhMyGosch auf Google Cloud Plat
 ```
 
 Das Script führt automatisch aus:
+
 - ✓ Artifact Registry Repository erstellen
 - ✓ Service Account Berechtigungen konfigurieren
 - ✓ GitHub Connection einrichten (Anleitung)
@@ -47,7 +48,7 @@ gcloud projects add-iam-policy-binding bkg-ai \
 
 #### C. GitHub Connection
 
-1. Öffne: https://console.cloud.google.com/cloud-build/triggers/connect?project=bkg-ai
+1. Öffne: <https://console.cloud.google.com/cloud-build/triggers/connect?project=bkg-ai>
 2. Wähle "GitHub (Cloud Build GitHub App)"
 3. Authentifiziere mit GitHub
 4. Wähle Repository: `eyshoit-commits/OMyGosch`
@@ -67,12 +68,66 @@ gcloud builds triggers create github \
 
 ## 🔨 Build manuell starten
 
+### Nur Image bauen (ohne Deployment)
+
 ```bash
 gcloud builds submit \
   --config cloudbuild.yaml \
   --project=bkg-ai \
   --region=europe-west1
 ```
+
+### Mit automatischem Cloud Run Deployment
+
+```bash
+gcloud builds submit \
+  --config cloudbuild-with-deploy.yaml \
+  --project=bkg-ai \
+  --region=europe-west1
+```
+
+## 🚢 Cloud Run Deployment
+
+### Schnelles Deployment
+
+```bash
+./deploy-cloud-run.sh
+```
+
+Das Script führt automatisch aus:
+- ✓ Neuestes Image aus Artifact Registry verwenden
+- ✓ AUTH_SECRET generieren (falls nicht gesetzt)
+- ✓ Service mit korrekten Environment Variables deployen
+- ✓ Port, Memory, CPU und Timeouts konfigurieren
+
+### Manuelles Deployment
+
+```bash
+# AUTH_SECRET generieren
+export AUTH_SECRET=$(openssl rand -base64 32)
+
+# Zu Cloud Run deployen
+gcloud run deploy bkg \
+  --image=europe-west1-docker.pkg.dev/bkg-ai/bkg-ai/opencode-ohmygosh:latest \
+  --region=europe-west1 \
+  --project=bkg-ai \
+  --platform=managed \
+  --port=5003 \
+  --timeout=300 \
+  --memory=4Gi \
+  --cpu=2 \
+  --cpu-boost \
+  --no-cpu-throttling \
+  --max-instances=3 \
+  --allow-unauthenticated \
+  --update-env-vars="NODE_ENV=production,HOST=0.0.0.0,AUTH_SECRET=${AUTH_SECRET}"
+```
+
+### Cloud Run Service URL
+
+Nach dem Deployment ist der Service erreichbar unter:
+- **Prod**: https://bkg-1039981257574.europe-west1.run.app
+- **Health Check**: https://bkg-1039981257574.europe-west1.run.app/api/health
 
 ## 📊 Monitoring
 
@@ -91,9 +146,9 @@ gcloud builds log BUILD_ID --project=bkg-ai --stream
 
 ### Web Console
 
-- **Builds**: https://console.cloud.google.com/cloud-build/builds?project=bkg-ai
-- **Triggers**: https://console.cloud.google.com/cloud-build/triggers?project=bkg-ai
-- **Images**: https://console.cloud.google.com/artifacts/docker/bkg-ai/europe-west1/bkg-ai?project=bkg-ai
+- **Builds**: <https://console.cloud.google.com/cloud-build/builds?project=bkg-ai>
+- **Triggers**: <https://console.cloud.google.com/cloud-build/triggers?project=bkg-ai>
+- **Images**: <https://console.cloud.google.com/artifacts/docker/bkg-ai/europe-west1/bkg-ai?project=bkg-ai>
 
 ## ⚙️ Konfiguration
 
@@ -138,6 +193,7 @@ git push origin main
 ## 📝 .gcloudignore
 
 Folgende Dateien werden vom Build ausgeschlossen:
+
 - `.git/`
 - `node_modules/`
 - `*.log`
@@ -162,6 +218,50 @@ gcloud builds log BUILD_ID --project=bkg-ai
 
 # Build Details
 gcloud builds describe BUILD_ID --project=bkg-ai
+```
+
+### Cloud Run: Container failed to start
+
+**Problem**: `The user-provided container failed to start and listen on the port`
+
+**Ursachen**:
+1. **Fehlende AUTH_SECRET**: Container benötigt `AUTH_SECRET` Environment Variable
+2. **Port Mismatch**: App läuft auf Port 5003, nicht 8080
+3. **Zu kurzer Timeout**: Container braucht länger zum Starten
+
+**Lösung**:
+```bash
+# Service mit korrekten Einstellungen updaten
+./deploy-cloud-run.sh
+
+# Oder manuell:
+gcloud run services update bkg \
+  --region=europe-west1 \
+  --project=bkg-ai \
+  --port=5003 \
+  --timeout=300 \
+  --update-env-vars="AUTH_SECRET=$(openssl rand -base64 32)"
+```
+
+### Cloud Run Logs anzeigen
+
+```bash
+# Neueste Logs
+gcloud run services logs read bkg \
+  --region=europe-west1 \
+  --project=bkg-ai \
+  --limit=100
+
+# Live Logs streamen
+gcloud run services logs tail bkg \
+  --region=europe-west1 \
+  --project=bkg-ai
+
+# Spezifische Revision
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=bkg" \
+  --project=bkg-ai \
+  --limit=50 \
+  --format="table(timestamp,textPayload)"
 ```
 
 ### Permissions Error

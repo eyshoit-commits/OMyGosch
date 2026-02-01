@@ -1,0 +1,90 @@
+substitutions:
+  _REGION: europe-west1
+  _AR_REPO: bkg-ai
+  _SERVICE: opencode-ohmygosh
+  _COMPUTE_REGION: europe-west1
+  _CLOUD_RUN_SERVICE: bkg
+  # Generiere AUTH_SECRET manuell oder setze es in den Trigger-Substitutions
+  # z.B. mit: openssl rand -base64 32
+
+steps:
+  # Build mit Docker und Layer Caching
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "Dockerfile"
+      - "--cache-from"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:latest"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:latest"
+      - "."
+
+  # Push images
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID"
+
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:latest"
+
+  # Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        # Generate AUTH_SECRET if not provided
+        if [ -z "$_AUTH_SECRET" ]; then
+          export AUTH_SECRET=$(openssl rand -base64 32)
+          echo "Generated new AUTH_SECRET"
+        else
+          export AUTH_SECRET="$_AUTH_SECRET"
+        fi
+        
+        # Get service URL for CORS
+        SERVICE_URL=$$(gcloud run services describe ${_CLOUD_RUN_SERVICE} \
+          --region=${_COMPUTE_REGION} \
+          --project=$PROJECT_ID \
+          --format="value(status.url)" 2>/dev/null || echo "https://${_CLOUD_RUN_SERVICE}-$PROJECT_NUMBER.${_COMPUTE_REGION}.run.app")
+        
+        echo "Service URL: $$SERVICE_URL"
+        
+        # Deploy
+        gcloud run deploy ${_CLOUD_RUN_SERVICE} \
+          --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID \
+          --region=${_COMPUTE_REGION} \
+          --platform=managed \
+          --port=5003 \
+          --timeout=300 \
+          --memory=4Gi \
+          --cpu=2 \
+          --cpu-boost \
+          --no-cpu-throttling \
+          --max-instances=3 \
+          --min-instances=0 \
+          --concurrency=80 \
+          --allow-unauthenticated \
+          --set-env-vars="NODE_ENV=production,HOST=0.0.0.0,OPENCODE_SERVER_PORT=5551,DATABASE_PATH=/opt/app/data/opencode.db,WORKSPACE_PATH=/home/bkg/workspace,AUTH_SECRET=$$AUTH_SECRET,PROCESS_START_WAIT_MS=2000,PROCESS_VERIFY_WAIT_MS=1000,HEALTH_CHECK_INTERVAL_MS=5000,HEALTH_CHECK_TIMEOUT_MS=30000,MAX_FILE_SIZE_MB=50,MAX_UPLOAD_SIZE_MB=50,DEBUG=false,AUTH_TRUSTED_ORIGINS=$$SERVICE_URL,AUTH_SECURE_COOKIES=true"
+        
+        echo "==================================="
+        echo "Deployment erfolgreich!"
+        echo "Service URL: $$SERVICE_URL"
+        echo "==================================="
+
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID"
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:latest"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: "E2_HIGHCPU_8"
+  substitutionOption: "ALLOW_LOOSE"
+  dynamic_substitutions: true
+
+timeout: "1800s"
