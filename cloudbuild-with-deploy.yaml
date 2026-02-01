@@ -46,15 +46,15 @@ steps:
         else
           export AUTH_SECRET="$_AUTH_SECRET"
         fi
-        
+
         # Get service URL for CORS
         SERVICE_URL=$$(gcloud run services describe ${_CLOUD_RUN_SERVICE} \
           --region=${_COMPUTE_REGION} \
           --project=$PROJECT_ID \
           --format="value(status.url)" 2>/dev/null || echo "https://${_CLOUD_RUN_SERVICE}-$PROJECT_NUMBER.${_COMPUTE_REGION}.run.app")
-        
+
         echo "Service URL: $$SERVICE_URL"
-        
+
         # Deploy
         gcloud run deploy ${_CLOUD_RUN_SERVICE} \
           --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID \
@@ -71,7 +71,7 @@ steps:
           --concurrency=80 \
           --allow-unauthenticated \
           --set-env-vars="NODE_ENV=production,HOST=0.0.0.0,OPENCODE_SERVER_PORT=5551,DATABASE_PATH=/opt/app/data/opencode.db,WORKSPACE_PATH=/home/bkg/workspace,AUTH_SECRET=$$AUTH_SECRET,PROCESS_START_WAIT_MS=2000,PROCESS_VERIFY_WAIT_MS=1000,HEALTH_CHECK_INTERVAL_MS=5000,HEALTH_CHECK_TIMEOUT_MS=30000,MAX_FILE_SIZE_MB=50,MAX_UPLOAD_SIZE_MB=50,DEBUG=false,AUTH_TRUSTED_ORIGINS=$$SERVICE_URL,AUTH_SECURE_COOKIES=true"
-        
+
         echo "==================================="
         echo "Deployment erfolgreich!"
         echo "Service URL: $$SERVICE_URL"

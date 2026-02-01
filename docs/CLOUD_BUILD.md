@@ -95,6 +95,7 @@ gcloud builds submit \
 ```
 
 Das Script führt automatisch aus:
+
 - ✓ Neuestes Image aus Artifact Registry verwenden
 - ✓ AUTH_SECRET generieren (falls nicht gesetzt)
 - ✓ Service mit korrekten Environment Variables deployen
@@ -126,8 +127,9 @@ gcloud run deploy bkg \
 ### Cloud Run Service URL
 
 Nach dem Deployment ist der Service erreichbar unter:
-- **Prod**: https://bkg-1039981257574.europe-west1.run.app
-- **Health Check**: https://bkg-1039981257574.europe-west1.run.app/api/health
+
+- **Prod**: <https://bkg-1039981257574.europe-west1.run.app>
+- **Health Check**: <https://bkg-1039981257574.europe-west1.run.app/api/health>
 
 ## 📊 Monitoring
 
@@ -225,11 +227,13 @@ gcloud builds describe BUILD_ID --project=bkg-ai
 **Problem**: `The user-provided container failed to start and listen on the port`
 
 **Ursachen**:
+
 1. **Fehlende AUTH_SECRET**: Container benötigt `AUTH_SECRET` Environment Variable
 2. **Port Mismatch**: App läuft auf Port 5003, nicht 8080
 3. **Zu kurzer Timeout**: Container braucht länger zum Starten
 
 **Lösung**:
+
 ```bash
 # Service mit korrekten Einstellungen updaten
 ./deploy-cloud-run.sh
