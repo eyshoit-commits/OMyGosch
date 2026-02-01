@@ -44,7 +44,6 @@ ENV CONDA_AUTO_ACTIVATE_BASE=false
 COPY pnpm-workspace.yaml /home/bkg/workspace/
 COPY docs/SETUP.MD /home/bkg/workspace/docs/SETUP.MD
 COPY package.json /home/bkg/workspace/
-COPY quick-start.sh /home/bkg/workspace/
 COPY setup-environment.sh /home/bkg/workspace/
 COPY .gitignore /home/bkg/workspace/
 COPY .opencode /home/bkg/workspace/.opencode
