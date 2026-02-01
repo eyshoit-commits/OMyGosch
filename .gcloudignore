@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+node_modules/
+.opencode/node_modules/
+*.log
+.DS_Store
+README.md
+README.MD
+docs/
+.devcontainer/
+.github/
