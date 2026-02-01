@@ -41,26 +41,21 @@ ENV WORKSPACE_PATH=/home/bkg/workspace
 ENV PATH="/opt/conda/bin:/home/bkg/.cargo/bin:$PATH"
 ENV CONDA_AUTO_ACTIVATE_BASE=false
 
-
-COPY ../pnpm-workspace.yaml /home/bkg/workspace/
-
-COPY ../docs/SETUP.MD /home/bkg/workspace/docs/SETUP.MD
-
-COPY ../package.json /home/bkg/workspace/
-COPY ../quick-start.sh /home/bkg/workspace/
-COPY ../setup-environment.sh /home/bkg/workspace/
-COPY ../.gitignore /home/bkg/workspace/
-COPY ../.opencode /home/bkg/workspace/.opencode
-
-COPY ../scripts /opt/app/scripts
-
-COPY ../scripts/generate-openapi.ts /home/bkg/workspace/scripts/generate-openapi.ts
+COPY pnpm-workspace.yaml /home/bkg/workspace/
+COPY docs/SETUP.MD /home/bkg/workspace/docs/SETUP.MD
+COPY package.json /home/bkg/workspace/
+COPY quick-start.sh /home/bkg/workspace/
+COPY setup-environment.sh /home/bkg/workspace/
+COPY .gitignore /home/bkg/workspace/
+COPY .opencode /home/bkg/workspace/.opencode
+COPY scripts /opt/app/scripts
+COPY scripts/generate-openapi.ts /home/bkg/workspace/scripts/generate-openapi.ts
 
 RUN mkdir -p /opt/app/backend/node_modules/@opencode-manager && \
     rm -f /opt/app/backend/node_modules/@opencode-manager/shared && \
     ln -s /opt/app/shared /opt/app/backend/node_modules/@opencode-manager/shared
 
-COPY ../scripts/docker-entrypoint.sh /docker-entrypoint.sh
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 RUN mkdir -p /home/bkg/workspace && \
