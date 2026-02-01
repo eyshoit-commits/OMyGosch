@@ -1,7 +1,9 @@
 services:
   app:
-    image: ghcr.io/chriswritescode-dev/opencode-manager:0.8.21
-    container_name: opencode-manager
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: opencode-ohmygosh
     ports:
       - "5003:5003"
       - "5100:5100"
