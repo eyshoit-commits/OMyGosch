@@ -1,0 +1,30 @@
+name: tool-usage-001
+description: Verify correct tool selection and usage
+
+context:
+  userRequest: "Create a Cloud Storage bucket named 'my-data-bucket' and upload a file called data.csv"
+  
+scenarios:
+  - name: Resource creation
+    expectedTool: bash
+    expectedCommand: "gcloud storage buckets create gs://my-data-bucket"
+    shouldNotUse: write  # Don't create scripts for simple commands
+    
+  - name: File upload
+    expectedTool: bash
+    expectedCommand: "gsutil cp data.csv gs://my-data-bucket/"
+    
+  - name: Verification
+    expectedTool: bash
+    expectedCommand: "gsutil ls gs://my-data-bucket/"
+    
+  - name: Parallel resource checks
+    description: When checking multiple resources simultaneously
+    expectedTool: task
+    expectedUsage: "Delegate parallel checks for independent resources"
+    
+expectations:
+  usesCorrectTools: true
+  followsToolDefinitions: true
+  usesParallelWhenAppropriate: true
+  doesNotOveruseTaskTool: true  # Only for truly independent operations

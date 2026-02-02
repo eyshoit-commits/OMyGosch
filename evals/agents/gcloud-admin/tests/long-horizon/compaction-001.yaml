@@ -1,0 +1,54 @@
+name: compaction-001
+description: Verify agent summarizes when context fills and preserves critical info
+
+context:
+  userRequest: "Manage a complex multi-region deployment"
+  conversationLength: long  # Simulate long conversation
+  criticalInfo:
+    - projectId: "production-project-123"
+    - activeRegion: "us-central1"
+    - pendingResources:
+      - "vm-1: created, needs firewall"
+      - "vm-2: pending creation"
+    - architecturalDecision: "Using VPC connector for Cloud Run"
+    
+steps:
+  - step: 1
+    description: Context fills up
+    trigger: simulated_context_limit
+    
+  - step: 2
+    description: Agent compacts/summarizes
+    agentShould:
+      - writeNotesToFile: true
+      - preserveCriticalInfo: true
+      - discardRedundantOutputs: true
+      
+  - step: 3
+    description: Preserved information
+    mustPreserve:
+      - projectId: "production-project-123"
+      - activeRegion: "us-central1"
+      - vm-1 status and pending firewall rule
+      - vm-2 pending status
+      - VPC connector decision
+      
+  - step: 4
+    description: Discarded information
+    canDiscard:
+      - Previous "gcloud compute instances list" outputs
+      - Successful command confirmations
+      - Redundant verification steps
+      
+  - step: 5
+    description: Continue from summary
+    agentShould:
+      - resumeSeamlessly: true
+      - knowNextSteps: true
+      
+expectations:
+  summarizesWhenContextFills: true
+  preservesCriticalInfo: true
+  discardsRedundantOutputs: true
+  writesPersistentNotes: true
+  resumesSeamlessly: true

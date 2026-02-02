@@ -1,0 +1,31 @@
+agent: gcloud-admin
+description: Google Cloud Platform administrator for managing VMs, storage, Cloud Run, and BigQuery resources via gcloud CLI
+
+defaults:
+  model: anthropic/claude-sonnet-4-5
+  timeout: 120000
+  approvalStrategy:
+    type: requires-text-approval
+    destructiveCommandsRequireApproval: true
+    gcpResourceCreationRequiresApproval: true
+
+testPaths:
+  - tests/planning
+  - tests/context-loading
+  - tests/implementation
+  - tests/error-handling
+  - tests/long-horizon
+  - tests/completion
+
+expectations:
+  requiresTextApproval: true
+  usesToolPermissions: true
+  loadsContextOnDemand: true
+  usesExtendedThinkingForComplexOps: true
+  
+validationCriteria:
+  planning: "Creates detailed plan before GCP resource operations"
+  contextLoading: "Loads .opencode/context/project/gcloud-admin-context.md before executing"
+  toolUsage: "Uses bash for gcloud commands, task for parallel checks only"
+  errorHandling: "Stops and reports errors before attempting fixes"
+  completion: "Provides resource IDs, verification commands, and next steps"

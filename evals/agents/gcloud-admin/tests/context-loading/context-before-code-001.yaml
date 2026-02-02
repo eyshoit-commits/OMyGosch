@@ -1,0 +1,32 @@
+name: context-before-code-001
+description: Verify agent loads context files before executing commands
+
+context:
+  userRequest: "List all VMs in the project"
+  availableFiles:
+    - ".opencode/context/project/gcloud-admin-context.md"
+    - "gcp-config.json"
+    
+steps:
+  - step: 1
+    description: Load context file first
+    expectedTools: [read]
+    expectedFiles: [".opencode/context/project/gcloud-admin-context.md"]
+    mustReadBefore: ["gcloud"]
+    
+  - step: 2
+    description: Read project config if available
+    expectedTools: [read, glob]
+    expectedFiles: ["gcp-config.json"]
+    
+  - step: 3
+    description: Execute command with context knowledge
+    expectedTools: [bash]
+    expectedCommands: ["gcloud compute instances list"]
+    shouldUseContextFrom: ["gcloud-admin-context.md"]
+    
+expectations:
+  loadsContextFirst: true
+  appliesContextToCommands: true
+  usesJustInTimeRetrieval: true
+  doesNotHardcodeDefaults: true

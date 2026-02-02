@@ -1,0 +1,39 @@
+name: incremental-001
+description: Verify one-step-at-a-time implementation with validation
+
+context:
+  userRequest: "Deploy a Cloud Run service called 'api-service'"
+  
+steps:
+  - step: 1
+    description: Verify gcloud and project
+    expectedTools: [bash]
+    expectedCommands: ["gcloud auth list", "gcloud config get-value project"]
+    
+  - step: 2
+    description: Check if service already exists
+    expectedTools: [bash]
+    expectedCommands: ["gcloud run services list --filter=api-service"]
+    
+  - step: 3
+    description: Plan deployment (don't execute yet)
+    expectedOutputContains:
+      - "Step 1"
+      - "Step 2"
+    shouldWaitForApproval: true
+    
+  - step: 4
+    description: Deploy service after approval
+    expectedTools: [bash]
+    expectedCommands: ["gcloud run deploy api-service"]
+    
+  - step: 5
+    description: Verify deployment
+    expectedTools: [bash]
+    expectedCommands: ["gcloud run services describe api-service"]
+    
+expectations:
+  implementsIncrementally: true
+  validatesEachStep: true
+  noBatchExecution: true
+  checksBeforeCreates: true

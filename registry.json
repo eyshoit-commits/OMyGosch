@@ -1,0 +1,28 @@
+{
+  "agents": [
+    {
+      "name": "gcloud-admin",
+      "type": "agent",
+      "path": ".opencode/agent/gcloud-admin.md",
+      "description": "Google Cloud Platform administrator for managing VMs, storage, Cloud Run, and BigQuery resources via gcloud CLI",
+      "category": "primary",
+      "status": "experimental",
+      "version": "1.0.0",
+      "maintainer": "OpenCode",
+      "tested_with": "anthropic/claude-sonnet-4-5",
+      "last_tested": "2026-02-02",
+      "tags": ["gcp", "google-cloud", "infrastructure", "devops", "cli"],
+      "capabilities": [
+        "Compute Engine VM management",
+        "Cloud Storage bucket operations",
+        "Cloud Run service deployment",
+        "Cloud Functions management",
+        "BigQuery dataset and query operations"
+      ],
+      "context_file": ".opencode/context/project/gcloud-admin-context.md",
+      "test_suite": "evals/agents/gcloud-admin/",
+      "free_tier_aware": true,
+      "requires_authentication": true
+    }
+  ]
+}

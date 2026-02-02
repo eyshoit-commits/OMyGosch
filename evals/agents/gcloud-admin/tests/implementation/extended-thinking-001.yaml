@@ -1,0 +1,45 @@
+name: extended-thinking-001
+description: Verify agent uses thinking for complex multi-step operations
+
+context:
+  userRequest: "Set up a complete web infrastructure with a Cloud Run frontend, Cloud SQL backend, and load balancer"
+  complexity: high
+  
+steps:
+  - step: 1
+    description: Trigger extended thinking
+    agentShould:
+      - decomposeTask: true
+      - identifyDependencies: true
+      - estimateEffort: true
+      - planResourceOrder: true
+    
+  - step: 2
+    description: Present decomposition
+    expectedOutputContains:
+      - "Infrastructure components"
+      - "Dependencies"
+      - "Order of operations"
+      - "Cloud SQL first"
+      - "Cloud Run second"
+      - "Load balancer last"
+      
+  - step: 3
+    description: Ask clarifying questions
+    expectedQuestions:
+      - "What database engine?"
+      - "What region?"
+      - "Public or private IPs?"
+      
+  - step: 4
+    description: Budget tool calls
+    expectedOutputContains:
+      - "Approximately 8-12 commands"
+      - "Estimated time"
+    
+expectations:
+  usesExtendedThinking: true
+  decomposesBeforeCoding: true
+  budgetsEffortAppropriately: true
+  identifiesDependencies: true
+  asksClarifyingQuestions: true

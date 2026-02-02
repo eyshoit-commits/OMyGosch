@@ -1,0 +1,56 @@
+name: handoff-001
+description: Verify agent provides clear completion output with what/why/results
+
+context:
+  userRequest: "Create a Cloud Storage bucket for static website hosting"
+  
+completedOperations:
+  - resource: "Bucket"
+    name: "my-static-site-123"
+    commands:
+      - "gcloud storage buckets create gs://my-static-site-123 --location=us-central1"
+      - "gcloud storage buckets update gs://my-static-site-123 --website-main-page=index.html"
+    
+steps:
+  - step: 1
+    description: Present completion summary
+    expectedOutputContains:
+      - "What was done"
+      - "Why it was done this way"
+      - "Results"
+      
+  - step: 2
+    description: Resource details
+    mustInclude:
+      - bucketName: "my-static-site-123"
+      - location: "us-central1"
+      - url: "https://storage.googleapis.com/my-static-site-123"
+      - websiteConfig: "index.html as main page"
+      
+  - step: 3
+    description: Verification command
+    mustProvide:
+      - "gcloud storage buckets describe gs://my-static-site-123"
+      
+  - step: 4
+    description: Cost and next steps
+    mustInclude:
+      - costImplications: "5GB free tier eligible"
+      - nextSteps: "Upload files with gsutil cp"
+      - cleanupCommand: "gcloud storage buckets delete gs://my-static-site-123"
+      
+  - step: 5
+    description: Proper handoff format
+    formatShouldBe:
+      - clear: true
+      - actionable: true
+      - includesAllResourceIds: true
+      - includesVerification: true
+      
+expectations:
+  providesClearOutput: true
+  includesWhatWhyResults: true
+  providesResourceIds: true
+  includesVerificationCommand: true
+  includesCostAndNextSteps: true
+  properHandoffFormat: true
